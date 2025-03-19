@@ -22,7 +22,7 @@ MUSIC_LEVEL = ('./asset/Level.flac')
 MUSIC_SCORE = ('./asset/Score.wav')
 
 #S
-SPAWN_TIME = 4000
+SPAWN_TIME = 1000
 #W
 WIN_WIDTH = 324
 WIN_HEIGHT = 576
