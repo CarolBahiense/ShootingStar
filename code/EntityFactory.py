@@ -20,6 +20,5 @@ class EntityFactory:
             case 'Player':
                 return Player('Player', (P_CENTER_H, WIN_HEIGHT - 130))
             case 'Enemy':
-                #Não estou conseguindo fazer o inimigo spawnar nas 3 posições ficas que eu quero
-                values = [P_LEFT_H, P_CENTER_H, P_RIGHT_H]
-                return Enemy('Enemy', (random.choice(values),0 - 30))
+                values = [(P_LEFT_H,-10), (P_CENTER_H, -10), (P_RIGHT_H,-10)]
+                return Enemy('Enemy', (random.choice(values)))
