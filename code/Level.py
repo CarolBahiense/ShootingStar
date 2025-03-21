@@ -19,34 +19,30 @@ class Level:
         player = EntityFactory.get_entity('Player')
         self.entity_list.append(player)
         pygame.time.set_timer(EVENT_ENEMY, 0)
+        self.running = True
 
     def run(self):
         pygame.mixer_music.load(MUSIC_LEVEL)
         pygame.mixer_music.play(-1)
-        pygame.mixer_music.set_volume(0.3)
+        pygame.mixer_music.set_volume(0)
         clock = pygame.time.Clock()
+
         while True:
             clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == EVENT_ENEMY:
+                    self.entity_list.append(EntityFactory.get_entity('Enemy'))
 
             for ent in self.entity_list:
                 self.window.blit(source=ent.surf, dest=ent.rect)
                 ent.move()
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == EVENT_ENEMY:
-                    self.entity_list.append(EntityFactory.get_entity('Enemy'))
-
-                found_player = False
-                for ent in self.entity_list:
-                    if isinstance(ent,Player):
-                        found_player = True
-                if not found_player:
-                    return False
-
-
+            found_player = any(isinstance(ent, Player) for ent in self.entity_list)
+            if not found_player:
+                self.running = False
 
             #print texts
             self.level_text(20,f'fps:{clock.get_fps() :.0f}', C_WHITE, (10, WIN_HEIGHT - 35))

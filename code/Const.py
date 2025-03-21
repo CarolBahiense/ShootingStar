@@ -1,6 +1,5 @@
-#C
 import pygame
-
+#C
 C_WHITE = (255, 255, 255)
 C_PURPLE = (31,12,81)
 C_YELLOW = (252,222,28)
