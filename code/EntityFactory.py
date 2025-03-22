@@ -1,15 +1,15 @@
 import random
 
-from code.Background import Background
-from code.Const import WIN_HEIGHT, P_CENTER_H, WIN_WIDTH, P_LEFT_H, P_RIGHT_H
-from code.Enemy import Enemy
-from code.Player import Player
+from Code.Background import Background
+from Code.Const import WIN_WIDTH, WIN_HEIGHT, P_CENTER_H, P_LEFT_H, P_RIGHT_H
+from Code.Player import Player
+from Code.Enemy import Enemy
 
 
 class EntityFactory:
 
     @staticmethod
-    def get_entity(entity_name: str, position=(0, 0)):
+    def get_entity(entity_name : str, position=(0,0)):
         match entity_name:
             case 'Level':
                 list_bg = []
@@ -20,5 +20,4 @@ class EntityFactory:
             case 'Player':
                 return Player('Player', (P_CENTER_H, WIN_HEIGHT - 130))
             case 'Enemy':
-                values = [(P_LEFT_H,-10), (P_CENTER_H, -10), (P_RIGHT_H,-10)]
-                return Enemy('Enemy', (random.choice(values)))
+                return Enemy('Enemy', (random.choice([(P_LEFT_H, -10), (P_CENTER_H, -10), (P_RIGHT_H, -10)])))

@@ -1,6 +1,5 @@
-from code.Const import ENTITY_SPEED, WIN_HEIGHT
-from code.Entity import Entity
-
+from Code.Const import WIN_WIDTH, ENTITY_SPEED, WIN_HEIGHT
+from Code.Entity import Entity
 
 class Background(Entity):
     def __init__(self, name: str, position: tuple):

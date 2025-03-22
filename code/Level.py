@@ -1,53 +1,74 @@
+import random
 import sys
 
-import pygame
-from pygame import Surface, Rect
+import pygame.display
+from pygame import Surface, Rect, K_ESCAPE
 from pygame.font import Font
 
-from code.Const import MUSIC_LEVEL, EVENT_ENEMY, C_WHITE, WIN_HEIGHT, SPAWN_TIME
-from code.Entity import Entity
-from code.EntityFactory import EntityFactory
-from code.Player import Player
+from Code.Const import C_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, MUSIC_LEVEL, C_LIGHTBLUE, P_CENTER_H, \
+    P_CENTER_V
+from Code.Enemy import Enemy
+from Code.Entity import Entity
+from Code.EntityFactory import EntityFactory
+from Code.EntityMediator import EntityMediator
+from Code.Player import Player
 
 
 class Level:
-    def __init__(self, window: Surface, name:str):
+    def __init__(self, window: Surface, name:str, game_mode:str,player_score:list[int]):
         self.window = window
         self.name = name
+        self.game_mode = game_mode #Modo de jogo
         self.entity_list: list[Entity]=[]
         self.entity_list.extend(EntityFactory.get_entity(self.name))
         player = EntityFactory.get_entity('Player')
+        player.score = player_score[0]
+        self.player = player
         self.entity_list.append(player)
-        pygame.time.set_timer(EVENT_ENEMY, 0)
-        self.running = True
+        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)  # Configura o timer para spawn de inimigos
 
-    def run(self):
+    def run(self,player_score:list[int]):
         pygame.mixer_music.load(MUSIC_LEVEL)
         pygame.mixer_music.play(-1)
-        pygame.mixer_music.set_volume(0)
+        pygame.mixer_music.set_volume(0.3)
         clock = pygame.time.Clock()
-
         while True:
             clock.tick(60)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == EVENT_ENEMY:
-                    self.entity_list.append(EntityFactory.get_entity('Enemy'))
-
             for ent in self.entity_list:
                 self.window.blit(source=ent.surf, dest=ent.rect)
-                ent.move()
 
-            found_player = any(isinstance(ent, Player) for ent in self.entity_list)
+                if ent.name !='Player':
+                    ent.move()
+                if ent.name == 'Player':
+                    ent.score+=1
+                    self.level_text(20, f'Health:{ent.health} | Score: {ent.score}', C_LIGHTBLUE, (10, 10))
+            for event in pygame.event.get():
+                if event.type == EVENT_ENEMY:
+                    self.entity_list.append(EntityFactory.get_entity('Enemy'))
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                self.player.move(event)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        return
+            found_player = False
+            for ent in self.entity_list:
+                if isinstance(ent, Player):
+                    found_player = True
             if not found_player:
-                self.running = False
+                player_score[0] = self.player.score  # Salvar a pontuação antes de ir para a tela de score
+                return False
 
             #print texts
-            self.level_text(20,f'fps:{clock.get_fps() :.0f}', C_WHITE, (10, WIN_HEIGHT - 35))
-            self.level_text(20, f'entidades: {len(self.entity_list)}', C_WHITE, (10, WIN_HEIGHT - 20))
+
             pygame.display.flip()
+
+            ##Collisions
+            EntityMediator.verify_collision(entity_list=self.entity_list)
+            EntityMediator.verify_health(entity_list=self.entity_list)
+
 
 
     def level_text(self, text_size : int, text : str, text_color: tuple, text_pos : tuple):

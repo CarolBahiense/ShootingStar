@@ -1,4 +1,4 @@
-from code.Game import Game
+from Code.Game import Game
 
 
 if __name__ == '__main__':
